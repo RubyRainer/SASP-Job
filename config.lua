@@ -14,6 +14,20 @@ Config.Job = {
     offDutyName = 'off' -- optional off-duty label
 }
 
+Config.QBCoreJobBootstrap = {
+    enabled = true, -- auto-create the SASP job in QBCore.Shared.Jobs if missing
+    label = 'San Andreas State Police',
+    defaultDuty = false,
+    offDutyPay = false,
+    grades = {
+        ['0'] = { name = 'Cadet', payment = 450, isboss = false },
+        ['1'] = { name = 'Trooper', payment = 600, isboss = false },
+        ['2'] = { name = 'Senior Trooper', payment = 700, isboss = false },
+        ['3'] = { name = 'Sergeant', payment = 875, isboss = true },
+        ['4'] = { name = 'Lieutenant', payment = 1000, isboss = true }
+    }
+}
+
 Config.DutyStations = {
     { label = 'Mission Row Locker Room', coords = vec3(459.52, -986.82, 30.69), radius = 1.8 },
     { label = 'Sandy Shores Substation', coords = vec3(1856.88, 3689.55, 34.27), radius = 1.8 },

@@ -113,6 +113,16 @@ Config.Framework.mode = 'auto' -- auto | custom | qbcore
 
 Players must have `job.name == Config.Job.name` (default: `sasp`) to access SASP features.
 
+### QBCore Job Bootstrap (Fix for `/setjob`)
+
+If `/setjob 1 sasp 0` fails because `sasp` is not in your QBCore jobs table, this resource can auto-register it at runtime:
+
+- `Config.QBCoreJobBootstrap.enabled = true`
+- Defines default job grades/labels/pay in `config.lua`
+- Registers `Config.Job.name` into `QBCore.Shared.Jobs` when the resource starts
+
+You can disable this if you already define the job manually in your core.
+
 ### Grade-Based Features
 
 - Armory equipment and standard loadouts are mapped by job grade.

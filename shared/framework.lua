@@ -7,6 +7,27 @@ SASPFramework = {
 
 local isServer = IsDuplicityVersion()
 
+local function ensureQBCoreJob()
+    if not isServer then return end
+    if not Config.QBCoreJobBootstrap or not Config.QBCoreJobBootstrap.enabled then return end
+    if not SASPFramework.QB or not SASPFramework.QB.Shared or not SASPFramework.QB.Shared.Jobs then return end
+
+    local jobName = Config.Job.name
+    if SASPFramework.QB.Shared.Jobs[jobName] then
+        return
+    end
+
+    SASPFramework.QB.Shared.Jobs[jobName] = {
+        label = Config.QBCoreJobBootstrap.label or 'SASP',
+        type = 'leo',
+        defaultDuty = Config.QBCoreJobBootstrap.defaultDuty == true,
+        offDutyPay = Config.QBCoreJobBootstrap.offDutyPay == true,
+        grades = Config.QBCoreJobBootstrap.grades or {}
+    }
+
+    print(('^2[SASP] Registered missing QBCore job "%s" from config bootstrap.^0'):format(jobName))
+end
+
 local function detectFramework()
     if Config.Framework.mode == 'qbcore' then
         return 'qbcore'
@@ -28,6 +49,7 @@ CreateThread(function()
 
     if SASPFramework.mode == 'qbcore' then
         SASPFramework.QB = exports[Config.Framework.qbCoreExport]:GetCoreObject()
+        ensureQBCoreJob()
         print('^2[SASP] Running in QBCore bridge mode.^0')
     else
         print('^3[SASP] Running in Custom standalone framework mode.^0')
