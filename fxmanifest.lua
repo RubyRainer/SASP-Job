@@ -8,7 +8,6 @@ description 'Feature-rich SASP duty job with custom framework and optional QBCor
 version '1.0.0'
 
 shared_scripts {
-    '@ox_lib/init.lua',
     'config.lua',
     'shared/utils.lua',
     'shared/framework.lua'
@@ -30,6 +29,5 @@ server_scripts {
 }
 
 dependencies {
-    'ox_lib',
     'oxmysql'
 }

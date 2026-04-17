@@ -28,28 +28,27 @@ RegisterCommand('sasp_resolve', function(_, args)
 end, false)
 
 RegisterCommand('sasp_armory', function()
-    local items = lib.callback.await('sasp:server:getArmoryCatalog', false)
+    local items = SASPFramework.triggerServerCallback('sasp:server:getArmoryCatalog')
     if not items or #items == 0 then
         SASPUtils.notify('No armory access at your current rank/job.', 'error')
         return
     end
 
-    local options = {}
+    local formatted = {}
     for _, item in ipairs(items) do
-        options[#options + 1] = {
-            title = item.label,
-            description = ('Withdraw %s'):format(item.item),
-            onSelect = function()
-                TriggerServerEvent('sasp:server:armoryWithdraw', item.item)
-            end
-        }
+        formatted[#formatted + 1] = item.item
     end
 
-    lib.registerContext({
-        id = 'sasp_armory_menu',
-        title = 'SASP Armory',
-        options = options
-    })
+    SASPUtils.notify(('Armory items: %s'):format(table.concat(formatted, ', ')), 'inform')
+    SASPUtils.notify('Use /sasp_armory_take [itemname] to withdraw.', 'inform')
+end, false)
 
-    lib.showContext('sasp_armory_menu')
+RegisterCommand('sasp_armory_take', function(_, args)
+    local itemName = args[1]
+    if not itemName then
+        SASPUtils.notify('Usage: /sasp_armory_take [itemname]', 'error')
+        return
+    end
+
+    TriggerServerEvent('sasp:server:armoryWithdraw', itemName)
 end, false)

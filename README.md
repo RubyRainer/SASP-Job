@@ -32,7 +32,7 @@ A feature-rich **San Andreas State Police** job resource designed for servers th
 - Panic button (`/sasp_panic`) broadcasting emergency radius blip.
 - Armory system:
   - rank-gated equipment catalog
-  - contextual ox_lib menu (`/sasp_armory`)
+  - text-driven armory listing + withdrawal command flow
 - Rank-based standard issue loadouts (`/sasp_loadout`).
 - Duty payroll loop with bonuses based on:
   - calls handled
@@ -77,7 +77,6 @@ sasp_job/
 
 ## Requirements
 
-- **ox_lib**
 - **oxmysql**
 - *(optional)* **qb-core** when using `qbcore` or `auto` mode and QBCore is running.
 
@@ -89,7 +88,6 @@ sasp_job/
 2. Run SQL from `sql/sasp_job.sql`.
 3. Ensure dependencies are started first:
    - `ensure oxmysql`
-   - `ensure ox_lib`
    - `ensure qb-core` *(optional, if using QBCore bridge)*
 4. Add this resource:
    - `ensure sasp_job`
@@ -126,7 +124,8 @@ Players must have `job.name == Config.Job.name` (default: `sasp`) to access SASP
 
 - `/saspduty` — Toggle on/off duty.
 - `/sasp_loadout` — Receive rank-based standard loadout.
-- `/sasp_armory` — Open armory context menu.
+- `/sasp_armory` — Print your rank-allowed armory item list.
+- `/sasp_armory_take [itemname]` — Withdraw one armory item by spawn name.
 - `/sasp_call [code]` — Create a dispatch call.
 - `/sasp_backup [code]` — Request backup.
 - `/sasp_accept [CALL-ID]` — Accept an open call.

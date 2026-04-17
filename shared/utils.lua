@@ -26,13 +26,17 @@ function SASPUtils.getStreetLabel(coords)
 end
 
 function SASPUtils.notify(message, level)
-    if lib and lib.notify then
-        lib.notify({
-            title = 'SASP',
-            description = message,
-            type = level or 'inform'
-        })
-    else
-        print(('[SASP Notify] %s'):format(message))
+    local qbTypeMap = {
+        success = 'success',
+        error = 'error',
+        warning = 'primary',
+        inform = 'primary'
+    }
+
+    if GetResourceState('qb-core') == 'started' then
+        TriggerEvent('QBCore:Notify', message, qbTypeMap[level] or 'primary')
+        return
     end
+
+    print(('[SASP Notify] %s'):format(message))
 end

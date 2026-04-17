@@ -1,7 +1,8 @@
-lib.callback.register('sasp:server:getArmoryCatalog', function(src)
+SASPFramework.registerServerCallback('sasp:server:getArmoryCatalog', function(src, cb)
     local job = SASPFramework.getJob(src)
     if not job or job.name ~= Config.Job.name then
-        return {}
+        cb({})
+        return
     end
 
     local grade = SASPFramework.getGradeLevel(src)
@@ -22,7 +23,7 @@ lib.callback.register('sasp:server:getArmoryCatalog', function(src)
         end
     end
 
-    return allowed
+    cb(allowed)
 end)
 
 RegisterNetEvent('sasp:server:armoryWithdraw', function(itemName)

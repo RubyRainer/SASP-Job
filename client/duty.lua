@@ -1,3 +1,9 @@
+local function drawHelpText(message)
+    BeginTextCommandDisplayHelp('STRING')
+    AddTextComponentSubstringPlayerName(message)
+    EndTextCommandDisplayHelp(0, false, true, -1)
+end
+
 CreateThread(function()
     while true do
         local waitMs = 1200
@@ -11,13 +17,11 @@ CreateThread(function()
                 DrawMarker(2, station.coords.x, station.coords.y, station.coords.z + 0.12, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.18, 0.18, 0.18, 32, 145, 255, 180, false, false, 2, false, nil, nil, false)
 
                 if distance <= station.radius then
-                    lib.showTextUI(('[E] Toggle Duty\n%s'):format(station.label))
+                    drawHelpText(('[E] Toggle Duty - %s'):format(station.label))
                     if IsControlJustPressed(0, 38) then
                         TriggerServerEvent('sasp:server:toggleDuty')
                         Wait(400)
                     end
-                else
-                    lib.hideTextUI()
                 end
             end
         end

@@ -20,22 +20,23 @@ local function isSASP(src)
     return job and job.name == Config.Job.name
 end
 
-lib.callback.register('sasp:server:getStartupData', function(src)
+SASPFramework.registerServerCallback('sasp:server:getStartupData', function(src, cb)
     local isOfficer = isSASP(src)
     if not isOfficer then
-        return { authorized = false }
+        cb({ authorized = false })
+        return
     end
 
     local data = ensureOfficerState(src)
     local job = SASPFramework.getJob(src)
 
-    return {
+    cb({
         authorized = true,
         onduty = job.onduty,
         grade = SASPFramework.getGradeLevel(src),
         unitCode = data.unitCode,
         openCallCount = #SASP.activeCalls
-    }
+    })
 end)
 
 RegisterNetEvent('sasp:server:requestLoadout', function()

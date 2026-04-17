@@ -17,6 +17,16 @@ local function getVehicleInFront(maxDistance)
     return nil
 end
 
+local function drawRadarText(text)
+    SetTextFont(4)
+    SetTextScale(0.35, 0.35)
+    SetTextColour(255, 255, 255, 230)
+    SetTextOutline()
+    BeginTextCommandDisplayText('STRING')
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayText(0.015, 0.8)
+end
+
 RegisterCommand('sasp_radar', function()
     radarEnabled = not radarEnabled
     SASPUtils.notify(radarEnabled and 'Front radar enabled.' or 'Front radar disabled.', radarEnabled and 'success' or 'warning')
@@ -27,15 +37,15 @@ CreateThread(function()
         if not radarEnabled then
             Wait(700)
         else
-            Wait(250)
+            Wait(0)
             local targetVehicle = getVehicleInFront(80.0)
             if targetVehicle then
                 local speedMph = GetEntitySpeed(targetVehicle) * 2.236936
                 local plate = GetVehicleNumberPlateText(targetVehicle)
                 local model = GetDisplayNameFromVehicleModel(GetEntityModel(targetVehicle))
-                lib.showTextUI(('Radar | %s | %s | %d MPH'):format(plate, model, math.floor(speedMph)))
+                drawRadarText(('Radar | %s | %s | %d MPH'):format(plate, model, math.floor(speedMph)))
             else
-                lib.showTextUI('Radar | No target')
+                drawRadarText('Radar | No target')
             end
         end
     end

@@ -5,6 +5,8 @@ SASPFramework = {
     callbacks = {}
 }
 
+local isServer = IsDuplicityVersion()
+
 local function detectFramework()
     if Config.Framework.mode == 'qbcore' then
         return 'qbcore'
@@ -32,22 +34,46 @@ CreateThread(function()
     end
 end)
 
-function SASPFramework.registerServerCallback(name, cb)
-    SASPFramework.callbacks[name] = cb
-end
-
-RegisterNetEvent('sasp:server:callback', function(name, requestId, ...)
-    local src = source
-    local handler = SASPFramework.callbacks[name]
-    if not handler then
-        TriggerClientEvent('sasp:client:callbackResult', src, requestId, nil)
-        return
+if isServer then
+    function SASPFramework.registerServerCallback(name, cb)
+        SASPFramework.callbacks[name] = cb
     end
 
-    handler(src, function(payload)
-        TriggerClientEvent('sasp:client:callbackResult', src, requestId, payload)
-    end, ...)
-end)
+    RegisterNetEvent('sasp:server:callback', function(name, requestId, ...)
+        local src = source
+        local handler = SASPFramework.callbacks[name]
+        if not handler then
+            TriggerClientEvent('sasp:client:callbackResult', src, requestId, nil)
+            return
+        end
+
+        handler(src, function(payload)
+            TriggerClientEvent('sasp:client:callbackResult', src, requestId, payload)
+        end, ...)
+    end)
+else
+    local callbackIndex = 0
+    local pending = {}
+
+    function SASPFramework.triggerServerCallback(name, ...)
+        callbackIndex = callbackIndex + 1
+        local requestId = callbackIndex
+        local p = promise.new()
+
+        pending[requestId] = p
+        TriggerServerEvent('sasp:server:callback', name, requestId, ...)
+
+        return Citizen.Await(p)
+    end
+
+    RegisterNetEvent('sasp:client:callbackResult', function(requestId, payload)
+        local p = pending[requestId]
+        if not p then return end
+
+        pending[requestId] = nil
+        p:resolve(payload)
+    end)
+end
 
 function SASPFramework.getIdentifier(src)
     if SASPFramework.mode == 'qbcore' then
@@ -160,14 +186,16 @@ function SASPFramework.getGradeLevel(src)
     return job.grade.level or 0
 end
 
-AddEventHandler('playerJoining', function(_oldId)
-    local src = source
-    if SASPFramework.mode == 'custom' then
-        SASPFramework.initCustomPlayer(src)
-    end
-end)
+if isServer then
+    AddEventHandler('playerJoining', function(_oldId)
+        local src = source
+        if SASPFramework.mode == 'custom' then
+            SASPFramework.initCustomPlayer(src)
+        end
+    end)
 
-AddEventHandler('playerDropped', function()
-    local src = source
-    SASPFramework.customPlayers[src] = nil
-end)
+    AddEventHandler('playerDropped', function()
+        local src = source
+        SASPFramework.customPlayers[src] = nil
+    end)
+end

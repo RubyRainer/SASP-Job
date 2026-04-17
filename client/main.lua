@@ -1,9 +1,7 @@
 local SASPClient = {
     startup = nil,
     activeCalls = {},
-    blips = {},
-    callbackIndex = 0,
-    pending = {}
+    blips = {}
 }
 
 RegisterNetEvent('sasp:client:notify', function(message)
@@ -77,7 +75,7 @@ end, false)
 CreateThread(function()
     while not NetworkIsPlayerActive(PlayerId()) do Wait(500) end
 
-    local startupData = lib.callback.await('sasp:server:getStartupData', false)
+    local startupData = SASPFramework.triggerServerCallback('sasp:server:getStartupData')
     SASPClient.startup = startupData
 
     if startupData and startupData.authorized then
